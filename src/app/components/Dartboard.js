@@ -131,8 +131,10 @@ const DartGame = () => {
         <circle cx="200" cy="200" r="190" fill={colors.dark} stroke="#000" strokeWidth="2" />
         
         {numbers.map((number, index) => {
-          const startAngle = index * 18;
-          const endAngle = (index + 1) * 18;
+          const ROTATION = -9
+
+          const startAngle = index * 18 + ROTATION;
+          const endAngle = (index + 1) * 18 +  ROTATION;
           const midAngle = startAngle + 9;
           const isEven = index % 2 === 0;
           
