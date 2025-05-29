@@ -9,7 +9,9 @@ import {
   GameOver,
   GameSelect,
   PlayerSetup,
-  Scoreboard
+  Scoreboard,
+  AroundTheClockScoreboard,
+  TargetDisplay
 } from './components/game';
 
 // Modal for showing bust messages
@@ -47,8 +49,9 @@ const GameContent = () => {
       return (
         <div className="min-h-screen bg-gray-100 p-4">
           <div className="max-w-4xl mx-auto">
-            {/* Finish Suggestion */}
-            <FinishSuggestion />
+            {/* Game-specific displays */}
+            {state.gameType === 'x01' && <FinishSuggestion />}
+            {state.gameType === 'around-the-clock' && <TargetDisplay />}
 
             <div className="text-center mb-4">
               <h1 className="text-3xl font-bold text-gray-800">{gameMode} Game</h1>
@@ -64,8 +67,12 @@ const GameContent = () => {
                 <CurrentTurn />
               </div>
 
-              {/* Scoreboard */}
-              <Scoreboard />
+              {/* Scoreboard - different for each game type */}
+              {state.gameType === 'around-the-clock' ? (
+                <AroundTheClockScoreboard />
+              ) : (
+                <Scoreboard />
+              )}
             </div>
           </div>
           

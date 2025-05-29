@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 import { useGameContext } from '../../context/GameContext';
-import { getGameImplementation } from '../../game-modes';
+import { getGameImplementation, GAME_MODES } from '../../game-modes';
 
 const GameOver = () => {
   const { state, dispatch, ACTIONS } = useGameContext();
@@ -16,6 +16,41 @@ const GameOver = () => {
     // Clear saved state from localStorage
     localStorage.removeItem('dart-game-state');
   };
+  
+  // Helper function to display score appropriately based on game type
+  const renderPlayerScore = (player) => {
+    const score = scores[player];
+    
+    if (!score) return "N/A";
+    
+    // For X01 games, the score is a simple number
+    if (gameType === GAME_MODES.X01) {
+      return score;
+    }
+    
+    // For Around the Clock, show current target or "Winner!"
+    if (gameType === GAME_MODES.AROUND_THE_CLOCK) {
+      return score.currentTarget > 20 ? "Winner!" : `Target: ${score.currentTarget}`;
+    }
+    
+    // For other game types, try to stringify or return a fallback
+    if (typeof score === 'object') {
+      try {
+        // Try to find a main score property to display
+        if (score.points !== undefined) return score.points;
+        if (score.total !== undefined) return score.total;
+        if (score.currentTarget !== undefined) return `Target: ${score.currentTarget}`;
+        
+        // Fallback to simple text
+        return player === winner ? "Winner!" : "Finished";
+      } catch (e) {
+        return "Score unavailable";
+      }
+    }
+    
+    // Default fallback
+    return String(score);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -24,12 +59,12 @@ const GameOver = () => {
         <h2 className="text-2xl font-semibold mb-6">🎉 {winner} Wins! 🎉</h2>
         
         <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-2">Final Scores:</h3>
+          <h3 className="text-lg font-semibold mb-2">Final Results:</h3>
           {players.map(player => (
             <div key={player} className="flex justify-between p-2 bg-gray-50 rounded mb-1">
               <span>{player}</span>
-              <span className={scores[player] === 0 ? 'text-green-600 font-bold' : ''}>
-                {scores[player]}
+              <span className={player === winner ? 'text-green-600 font-bold' : ''}>
+                {renderPlayerScore(player)}
               </span>
             </div>
           ))}

@@ -4,12 +4,15 @@ import GameOver from './GameOver';
 import GameSelect from './GameSelect';
 import PlayerSetup from './PlayerSetup';
 import Scoreboard from './Scoreboard';
-
+import AroundTheClockScoreboard from './AroundTheClockScoreboard';
+import TargetDisplay from './TargetDisplay';
 export {
   CurrentTurn,
   FinishSuggestion,
   GameOver,
   GameSelect,
   PlayerSetup,
-  Scoreboard
+  Scoreboard,
+  AroundTheClockScoreboard,
+  TargetDisplay
 };

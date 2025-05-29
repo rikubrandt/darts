@@ -30,11 +30,22 @@ const CurrentTurn = () => {
     if (currentDarts.length === 0 || editingIndex !== null) return;
     
     const playerName = players[currentPlayer];
+    const playerScore = scores[playerName];
+    
+    // Get all necessary options from the player's score
+    const gameOptions = playerScore?.gameOptions || {};
+    
+    // Log for debugging
+    console.log("Submitting turn:", { 
+      gameType, 
+      gameMode, 
+      playerName, 
+      currentDarts,
+      gameOptions
+    });
     
     // Get game implementation to process the turn
-    const gameImpl = getGameImplementation(gameType, { 
-      startingScore: gameMode === '501' ? 501 : gameMode === '301' ? 301 : 201 
-    });
+    const gameImpl = getGameImplementation(gameType, gameOptions);
     
     // Process the turn
     const result = gameImpl.processTurn({
@@ -42,6 +53,8 @@ const CurrentTurn = () => {
       currentDarts,
       currentPlayer: playerName
     });
+    
+    console.log("Turn result:", result);
     
     if (!result.isValid) {
       // Bust or invalid
@@ -66,21 +79,38 @@ const CurrentTurn = () => {
         payload: { player: playerName, score: result.updatedScore } 
       });
       
-      // Next player
-      dispatch({ 
-        type: ACTIONS.SET_CURRENT_PLAYER, 
-        payload: (currentPlayer + 1) % players.length 
-      });
-      dispatch({ type: ACTIONS.SET_CURRENT_DARTS, payload: [] });
+      // Check if player gets to continue (specific to games like Around the Clock)
+      if (result.continueTurn) {
+        console.log("Player continues their turn!");
+        // Clear darts but keep the same player
+        dispatch({ type: ACTIONS.SET_CURRENT_DARTS, payload: [] });
+      } else {
+        // Next player
+        console.log("Moving to next player");
+        dispatch({ 
+          type: ACTIONS.SET_CURRENT_PLAYER, 
+          payload: (currentPlayer + 1) % players.length 
+        });
+        dispatch({ type: ACTIONS.SET_CURRENT_DARTS, payload: [] });
+      }
     }
   };
 
   const turnTotal = currentDarts.reduce((sum, dart) => sum + dart.value, 0);
+  
+  // Check if current player gets to continue their turn
+  const isContinuing = scores[players[currentPlayer]]?.continueTurn;
 
   return (
     <div className="mt-4 w-full max-w-sm">
       <div className="bg-white p-4 rounded-lg shadow">
-        <h3 className="font-semibold text-black mb-2">Current Turn:</h3>
+        <h3 className="font-semibold text-black mb-2">
+          {isContinuing ? 
+            <span className="flex items-center text-green-600">
+              <span className="mr-2">🔥</span> Continue Your Turn
+            </span> : 
+            "Current Turn:"}
+        </h3>
         <div className="space-y-1">
           {/* Current darts list */}
           {currentDarts.map((dart, index) => (
@@ -137,9 +167,9 @@ const CurrentTurn = () => {
         <button
           onClick={submitTurn}
           disabled={currentDarts.length === 0 || editingIndex !== null}
-          className="w-full mt-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className={`w-full mt-3 py-2 ${isContinuing ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed`}
         >
-          Next Player
+          {isContinuing ? 'Continue Throwing' : 'Next Player'}
         </button>
       </div>
     </div>

@@ -36,14 +36,29 @@ const Dartboard = () => {
     }
   };
 
+  // Adjusted segment dimensions for better mobile usability
+  const dimensions = {
+    outerRadius: 190,
+    doubleInner: 165,
+    doubleOuter: 190, // Increased double ring size
+    outerSingleInner: 95,
+    outerSingleOuter: 165,
+    tripleInner: 80,
+    tripleOuter: 95, // Increased triple ring size
+    innerSingleInner: 25,
+    innerSingleOuter: 80,
+    singleBullRadius: 25, // Increased bullseye size
+    doubleBullRadius: 12.5 // Increased double bull size
+  };
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg">
       <svg width="400" height="400" viewBox="0 0 400 400" className="max-w-full h-auto">
-        {/* Outer ring */}
+        {/* Outer border */}
         <circle 
           cx="200" 
           cy="200" 
-          r="190" 
+          r={dimensions.outerRadius} 
           fill={DARTBOARD_COLORS.dark} 
           stroke="#000" 
           strokeWidth="2" 
@@ -59,7 +74,7 @@ const Dartboard = () => {
             <g key={`segment-${number}`}>
               {/* Outer single (largest region) */}
               <path
-                d={createSegmentPath(startAngle, endAngle, 110, 170)}
+                d={createSegmentPath(startAngle, endAngle, dimensions.outerSingleInner, dimensions.outerSingleOuter)}
                 fill={isEven ? DARTBOARD_COLORS.light : DARTBOARD_COLORS.dark}
                 stroke="#000"
                 strokeWidth="1"
@@ -67,9 +82,9 @@ const Dartboard = () => {
                 onClick={() => handleDartClick(`${REGIONS.SINGLE} ${number}`, number)}
               />
               
-              {/* Double ring (outer) */}
+              {/* Double ring (outer) - made larger */}
               <path
-                d={createSegmentPath(startAngle, endAngle, 170, 185)}
+                d={createSegmentPath(startAngle, endAngle, dimensions.doubleInner, dimensions.doubleOuter)}
                 fill={DARTBOARD_COLORS.double}
                 stroke="#000"
                 strokeWidth="1"
@@ -79,7 +94,7 @@ const Dartboard = () => {
               
               {/* Inner single */}
               <path
-                d={createSegmentPath(startAngle, endAngle, 40, 95)}
+                d={createSegmentPath(startAngle, endAngle, dimensions.innerSingleInner, dimensions.innerSingleOuter)}
                 fill={isEven ? DARTBOARD_COLORS.light : DARTBOARD_COLORS.dark}
                 stroke="#000"
                 strokeWidth="1"
@@ -87,9 +102,9 @@ const Dartboard = () => {
                 onClick={() => handleDartClick(`${REGIONS.SINGLE} ${number}`, number)}
               />
               
-              {/* Triple ring */}
+              {/* Triple ring - made larger */}
               <path
-                d={createSegmentPath(startAngle, endAngle, 95, 110)}
+                d={createSegmentPath(startAngle, endAngle, dimensions.tripleInner, dimensions.tripleOuter)}
                 fill={DARTBOARD_COLORS.triple}
                 stroke="#000"
                 strokeWidth="1"
@@ -99,8 +114,8 @@ const Dartboard = () => {
               
               {/* Number text */}
               <text
-                x={getTextPosition(midAngle, 177).x}
-                y={getTextPosition(midAngle, 177).y}
+                x={getTextPosition(midAngle, dimensions.doubleInner + 13).x}
+                y={getTextPosition(midAngle, dimensions.doubleInner + 13).y}
                 textAnchor="middle"
                 dominantBaseline="central"
                 fontSize="16"
@@ -114,26 +129,26 @@ const Dartboard = () => {
           );
         })}
         
-        {/* Single Bull */}
+        {/* Single Bull (outer bullseye) */}
         <circle
           cx="200"
           cy="200"
-          r="20"
+          r={dimensions.singleBullRadius}
           fill={DARTBOARD_COLORS.singleBull}
           stroke="#000"
-          strokeWidth="2"
+          strokeWidth="1"
           style={{ cursor: 'pointer' }}
           onClick={() => handleDartClick(REGIONS.SINGLE_BULL, 25)}
         />
         
-        {/* Double Bull */}
+        {/* Double Bull (inner bullseye) */}
         <circle
           cx="200"
           cy="200"
-          r="10"
+          r={dimensions.doubleBullRadius}
           fill={DARTBOARD_COLORS.doubleBull}
           stroke="#000"
-          strokeWidth="2"
+          strokeWidth="1"
           style={{ cursor: 'pointer' }}
           onClick={() => handleDartClick(REGIONS.DOUBLE_BULL, 50)}
         />

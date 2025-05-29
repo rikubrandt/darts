@@ -1,13 +1,14 @@
 'use client'
 import { BaseGame } from './BaseGame';
 import { X01Game } from './X01Game';
+import { AroundTheClockGame } from './AroundTheClockGame';
 
 // Export available game modes
 export const GAME_MODES = {
   X01: 'x01',
+  AROUND_THE_CLOCK: 'around-the-clock',
   // Add more game modes here as they are implemented
   // CRICKET: 'cricket',
-  // AROUND_THE_CLOCK: 'around-the-clock',
 };
 
 /**
@@ -17,9 +18,31 @@ export const GAME_MODES = {
  * @returns {BaseGame} - Game implementation instance
  */
 export function getGameImplementation(type, options = {}) {
+  console.log(`Creating game implementation for ${type} with options:`, options);
+  
   switch (type) {
     case GAME_MODES.X01:
-      return new X01Game(options.startingScore);
+      // For X01 games, the startingScore is the main option
+      return new X01Game(options.startingScore || 501);
+      
+    case GAME_MODES.AROUND_THE_CLOCK:
+      // For Around the Clock, pass all options for special game modes
+      const clockGame = new AroundTheClockGame({
+        doubleSkip: !!options.doubleSkip,
+        tripleSkip: !!options.tripleSkip,
+        skipOnMiss: !!options.skipOnMiss,
+        continueOnSuccess: !!options.continueOnSuccess
+      });
+      
+      console.log("Created Around the Clock game with options:", {
+        doubleSkip: clockGame.doubleSkip,
+        tripleSkip: clockGame.tripleSkip,
+        skipOnMiss: clockGame.skipOnMiss,
+        continueOnSuccess: clockGame.continueOnSuccess
+      });
+      
+      return clockGame;
+      
     // Add more game types as they are implemented
     // case GAME_MODES.CRICKET:
     //   return new CricketGame(options);
@@ -39,6 +62,11 @@ export function getAllGameModes() {
       implementation: new X01Game(),
       options: new X01Game().getGameOptions(),
     },
+    {
+      type: GAME_MODES.AROUND_THE_CLOCK,
+      implementation: new AroundTheClockGame(),
+      options: new AroundTheClockGame().getGameOptions(),
+    },
     // Add more game types as they are implemented
     // {
     //   type: GAME_MODES.CRICKET,
@@ -50,4 +78,4 @@ export function getAllGameModes() {
   return games;
 }
 
-export { BaseGame, X01Game };
+export { BaseGame, X01Game, AroundTheClockGame };
