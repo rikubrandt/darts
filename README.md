@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Dart Game Collection
 
-## Getting Started
+Use if you are too lazy to count in your head.
 
-First, run the development server:
+## Features
+
+- **Interactive Dartboard** - Click to throw darts in different sections
+- **Multiple Game Modes**:
+  - **Classic Games** (501, 301, 201) - The traditional countdown games
+  - **Clock Game** - Hit numbers in sequence from 1-20
+  - **Multiply Game** - Build multipliers and score points
+
+## Game Descriptions
+
+### Classic Games (501, 301, 201)
+- Start with a set number of points (501, 301, or 201)
+- Take turns throwing darts to reduce your score
+- Must finish exactly on zero with a double
+
+### Clock Game
+- Hit numbers in sequence from 1-20
+- Multiple variants:
+  - **Standard** - Basic sequential gameplay
+  - **Pro Mode** - Doubles and triples let you skip ahead
+  - **Streak Mode** - Hit all 3 darts to continue your turn
+
+### Multiply Game
+- Each round focuses on a different target number (1-20)
+- First 3 darts: Build a multiplier by hitting the target number
+- Second 3 darts: Score points which get multiplied by your factor
+- Bullseye always counts for factor (2x for single, 3x for double)
+- If multiplier is zero your overall score gets halved
+## Run
 
 ```bash
+# Install dependencies
+npm install
+
+# Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000) in your browser to play.
