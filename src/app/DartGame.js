@@ -2,7 +2,7 @@
 import React from 'react';
 import { GameProvider, useGameContext } from './context/GameContext';
 import { GAME_STATES } from './lib/constants';
-import { GAME_MODES } from './game-modes';
+import { GAME_MODES, getAllGameModes } from './game-modes';
 import { Dartboard } from './components/dartboard';
 import {
   CurrentTurn,
@@ -37,6 +37,22 @@ const BustModal = () => {
 const GameContent = () => {
   const { state } = useGameContext();
   const { gameState, players, gameMode } = state;
+  
+  // Import the getAllGameModes function directly here
+  // since it's only used in this component
+  const getGameTitle = (gameId) => {
+    // Get all game options
+    const allGameOptions = getAllGameModes().flatMap(gameMode => 
+      gameMode.options.map(option => ({
+        gameType: gameMode.type,
+        ...option
+      }))
+    );
+    
+    // Find the matching game option
+    const gameOption = allGameOptions.find(option => option.id === gameId);
+    return gameOption?.title || gameId;
+  };
 
   switch (gameState) {
     case GAME_STATES.SETUP:
@@ -59,18 +75,7 @@ const GameContent = () => {
 
             <div className="text-center mb-4">
               <h1 className="text-3xl font-bold text-gray-800">
-                {(() => {
-                  // Get user-friendly game title instead of using the game ID
-                  const allGameOptions = getAllGameModes().flatMap(gameMode => 
-                    gameMode.options.map(option => ({
-                      gameType: gameMode.type,
-                      ...option
-                    }))
-                  );
-                  
-                  const gameOption = allGameOptions.find(option => option.id === state.gameMode);
-                  return gameOption?.title || state.gameMode;
-                })()}
+                {getGameTitle(state.gameMode)}
               </h1>
               <div className="text-xl mt-2">
                 <span className="font-semibold text-blue-600">{players[state.currentPlayer]}'s Turn</span>
