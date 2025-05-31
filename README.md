@@ -2,6 +2,8 @@
 
 Use if you are too lazy to count in your head.
 
+[![LIVE DEMO](https://img.shields.io/badge/LIVE_DEMO-Play_Now!-brightgreen?style=for-the-badge)](https://darts-henna.vercel.app/)
+
 ## Features
 
 - **Interactive Dartboard** - Click to throw darts in different sections
@@ -30,6 +32,15 @@ Use if you are too lazy to count in your head.
 - Second 3 darts: Score points which get multiplied by your factor
 - Bullseye always counts for factor (2x for single, 3x for double)
 - If multiplier is zero your overall score gets halved
+
+## Screenshots
+
+![Game Setup Screen](./img/img1.png)
+*Game setup screen with player selection and game options*
+
+![Gameplay Screen](./img/img2.png)
+*Interactive dartboard and scoring during gameplay*
+
 ## Run
 
 ```bash
@@ -41,3 +52,10 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser to play.
+
+## Technologies Used
+
+- Next.js
+- React
+- Tailwind CSS
+- React Context (for state management)
