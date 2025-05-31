@@ -223,7 +223,7 @@ export class AroundTheClockGame extends BaseGame {
     return [
       {
         id: 'around-the-clock-standard',
-        title: 'Standard Mode',
+        title: 'Clock Game: Standard',
         description: 'Hit numbers 1-20 in sequence. First to complete wins.',
         value: { 
           doubleSkip: false, 
@@ -235,7 +235,7 @@ export class AroundTheClockGame extends BaseGame {
       },
       {
         id: 'around-the-clock-advanced',
-        title: 'Advanced Mode',
+        title: 'Clock Game: Pro Mode',
         description: 'Doubles and triples let you skip ahead! Three successful darts = keep throwing.',
         value: { 
           doubleSkip: true, 
@@ -247,7 +247,7 @@ export class AroundTheClockGame extends BaseGame {
       },
       {
         id: 'around-the-clock-streak',
-        title: 'Streak Mode',
+        title: 'Clock Game: Streak Mode',
         description: 'Hit all 3 darts = keep throwing. Miss = turn over.',
         value: { 
           doubleSkip: false, 

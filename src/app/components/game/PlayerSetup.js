@@ -52,7 +52,7 @@ const PlayerSetup = () => {
               onChange={(e) => setNewPlayerName(e.target.value)}
               onKeyDown={handleKeyPress}
               placeholder="Enter player name"
-              className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 p-2 border border-gray-300 text-black rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               onClick={addPlayer}
@@ -65,7 +65,7 @@ const PlayerSetup = () => {
 
         {players.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">Players:</h3>
+            <h3 className="text-lg font-semibold text-black mb-2">Players:</h3>
             <ul className="space-y-1">
               {players.map((player, index) => (
                 <li key={index} className="flex justify-between items-center p-2 bg-gray-50 rounded">

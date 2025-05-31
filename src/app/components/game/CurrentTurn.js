@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 import { useGameContext } from '../../context/GameContext';
-import { getGameImplementation } from '../../game-modes';
+import { getGameImplementation, GAME_MODES } from '../../game-modes';
 
 const CurrentTurn = () => {
   const { state, dispatch, ACTIONS } = useGameContext();
@@ -15,6 +15,14 @@ const CurrentTurn = () => {
     gameMode
   } = state;
 
+  // Check if current player gets to continue their turn
+  const isContinuing = scores[players[currentPlayer]]?.continueTurn || false;
+  
+  // Get the current player's phase for Multiplication game
+  const currentPhase = gameType === GAME_MODES.MULTIPLICATION 
+    ? scores[players[currentPlayer]]?.currentPhase 
+    : null;
+
   const removeDart = (index) => {
     dispatch({ type: ACTIONS.REMOVE_DART, payload: index });
     if (editingIndex === index) {
@@ -24,6 +32,23 @@ const CurrentTurn = () => {
 
   const editDart = (index) => {
     dispatch({ type: ACTIONS.SET_EDITING_INDEX, payload: index });
+  };
+
+  // Submit button text based on game type and state
+  const getSubmitButtonText = () => {
+    if (isContinuing) {
+      return 'Continue Throwing';
+    }
+    
+    // Special case for Multiplication game
+    if (gameType === GAME_MODES.MULTIPLICATION) {
+      if (currentPhase === 'factor') {
+        return 'Confirm Factor Darts';
+      }
+      return 'Complete Turn';
+    }
+    
+    return 'Next Player';
   };
 
   const submitTurn = () => {
@@ -98,18 +123,34 @@ const CurrentTurn = () => {
 
   const turnTotal = currentDarts.reduce((sum, dart) => sum + dart.value, 0);
   
-  // Check if current player gets to continue their turn
-  const isContinuing = scores[players[currentPlayer]]?.continueTurn;
+  // Define button color based on state
+  const getButtonColorClass = () => {
+    if (isContinuing) {
+      return 'bg-green-500 hover:bg-green-600';
+    }
+    
+    if (gameType === GAME_MODES.MULTIPLICATION && currentPhase === 'factor') {
+      return 'bg-purple-500 hover:bg-purple-600';
+    }
+    
+    return 'bg-blue-500 hover:bg-blue-600';
+  };
 
   return (
     <div className="mt-4 w-full max-w-sm">
       <div className="bg-white p-4 rounded-lg shadow">
         <h3 className="font-semibold text-black mb-2">
-          {isContinuing ? 
+          {isContinuing ? (
             <span className="flex items-center text-green-600">
               <span className="mr-2">🔥</span> Continue Your Turn
-            </span> : 
-            "Current Turn:"}
+            </span>
+          ) : gameType === GAME_MODES.MULTIPLICATION ? (
+            <span className={currentPhase === 'factor' ? 'text-purple-600' : 'text-blue-600'}>
+              {currentPhase === 'factor' ? 'Factor Phase' : 'Scoring Phase'}
+            </span>
+          ) : (
+            "Current Turn:"
+          )}
         </h3>
         <div className="space-y-1">
           {/* Current darts list */}
@@ -167,9 +208,9 @@ const CurrentTurn = () => {
         <button
           onClick={submitTurn}
           disabled={currentDarts.length === 0 || editingIndex !== null}
-          className={`w-full mt-3 py-2 ${isContinuing ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed`}
+          className={`w-full mt-3 py-2 ${getButtonColorClass()} text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed`}
         >
-          {isContinuing ? 'Continue Throwing' : 'Next Player'}
+          {getSubmitButtonText()}
         </button>
       </div>
     </div>

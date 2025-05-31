@@ -40,15 +40,15 @@ const Dartboard = () => {
   const dimensions = {
     outerRadius: 190,
     doubleInner: 165,
-    doubleOuter: 190, // Increased double ring size
+    doubleOuter: 190, 
     outerSingleInner: 95,
     outerSingleOuter: 165,
     tripleInner: 80,
-    tripleOuter: 95, // Increased triple ring size
+    tripleOuter: 95, 
     innerSingleInner: 25,
     innerSingleOuter: 80,
-    singleBullRadius: 25, // Increased bullseye size
-    doubleBullRadius: 12.5 // Increased double bull size
+    singleBullRadius: 25,
+    doubleBullRadius: 12.5
   };
 
   return (

@@ -2,11 +2,13 @@
 import { BaseGame } from './BaseGame';
 import { X01Game } from './X01Game';
 import { AroundTheClockGame } from './AroundTheClockGame';
+import { MultiplicationGame } from './MultiplicationGame';
 
 // Export available game modes
 export const GAME_MODES = {
   X01: 'x01',
   AROUND_THE_CLOCK: 'around-the-clock',
+  MULTIPLICATION: 'multiplication',
   // Add more game modes here as they are implemented
   // CRICKET: 'cricket',
 };
@@ -43,9 +45,12 @@ export function getGameImplementation(type, options = {}) {
       
       return clockGame;
       
-    // Add more game types as they are implemented
-    // case GAME_MODES.CRICKET:
-    //   return new CricketGame(options);
+    case GAME_MODES.MULTIPLICATION:
+      // For Multiplication game
+      return new MultiplicationGame({
+        maxRounds: options.maxRounds || 20
+      });
+
     default:
       throw new Error(`Unknown game type: ${type}`);
   }
@@ -67,15 +72,14 @@ export function getAllGameModes() {
       implementation: new AroundTheClockGame(),
       options: new AroundTheClockGame().getGameOptions(),
     },
-    // Add more game types as they are implemented
-    // {
-    //   type: GAME_MODES.CRICKET,
-    //   implementation: new CricketGame(),
-    //   options: new CricketGame().getGameOptions(),
-    // },
+    {
+      type: GAME_MODES.MULTIPLICATION,
+      implementation: new MultiplicationGame(),
+      options: new MultiplicationGame().getGameOptions(),
+    }
   ];
   
   return games;
 }
 
-export { BaseGame, X01Game, AroundTheClockGame };
+export { BaseGame, X01Game, AroundTheClockGame, MultiplicationGame };

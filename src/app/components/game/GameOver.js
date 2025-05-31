@@ -33,12 +33,18 @@ const GameOver = () => {
       return score.currentTarget > 20 ? "Winner!" : `Target: ${score.currentTarget}`;
     }
     
+    // For Multiplication Game, show the total score
+    if (gameType === GAME_MODES.MULTIPLICATION) {
+      return score.totalScore;
+    }
+    
     // For other game types, try to stringify or return a fallback
     if (typeof score === 'object') {
       try {
         // Try to find a main score property to display
         if (score.points !== undefined) return score.points;
         if (score.total !== undefined) return score.total;
+        if (score.totalScore !== undefined) return score.totalScore;
         if (score.currentTarget !== undefined) return `Target: ${score.currentTarget}`;
         
         // Fallback to simple text

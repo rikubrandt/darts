@@ -2,16 +2,19 @@
 import React from 'react';
 import { GameProvider, useGameContext } from './context/GameContext';
 import { GAME_STATES } from './lib/constants';
+import { GAME_MODES } from './game-modes';
 import { Dartboard } from './components/dartboard';
 import {
   CurrentTurn,
   FinishSuggestion,
   GameOver,
   GameSelect,
-  PlayerSetup,
+  CombinedSetup,
   Scoreboard,
   AroundTheClockScoreboard,
-  TargetDisplay
+  TargetDisplay,
+  MultiplicationScoreboard,
+  MultiplicationTargetDisplay
 } from './components/game';
 
 // Modal for showing bust messages
@@ -37,7 +40,7 @@ const GameContent = () => {
 
   switch (gameState) {
     case GAME_STATES.SETUP:
-      return <PlayerSetup />;
+      return <CombinedSetup />;
     
     case GAME_STATES.GAME_SELECT:
       return <GameSelect />;
@@ -50,11 +53,25 @@ const GameContent = () => {
         <div className="min-h-screen bg-gray-100 p-4">
           <div className="max-w-4xl mx-auto">
             {/* Game-specific displays */}
-            {state.gameType === 'x01' && <FinishSuggestion />}
-            {state.gameType === 'around-the-clock' && <TargetDisplay />}
+            {state.gameType === GAME_MODES.X01 && <FinishSuggestion />}
+            {state.gameType === GAME_MODES.AROUND_THE_CLOCK && <TargetDisplay />}
+            {state.gameType === GAME_MODES.MULTIPLICATION && <MultiplicationTargetDisplay />}
 
             <div className="text-center mb-4">
-              <h1 className="text-3xl font-bold text-gray-800">{gameMode} Game</h1>
+              <h1 className="text-3xl font-bold text-gray-800">
+                {(() => {
+                  // Get user-friendly game title instead of using the game ID
+                  const allGameOptions = getAllGameModes().flatMap(gameMode => 
+                    gameMode.options.map(option => ({
+                      gameType: gameMode.type,
+                      ...option
+                    }))
+                  );
+                  
+                  const gameOption = allGameOptions.find(option => option.id === state.gameMode);
+                  return gameOption?.title || state.gameMode;
+                })()}
+              </h1>
               <div className="text-xl mt-2">
                 <span className="font-semibold text-blue-600">{players[state.currentPlayer]}'s Turn</span>
               </div>
@@ -68,8 +85,10 @@ const GameContent = () => {
               </div>
 
               {/* Scoreboard - different for each game type */}
-              {state.gameType === 'around-the-clock' ? (
+              {state.gameType === GAME_MODES.AROUND_THE_CLOCK ? (
                 <AroundTheClockScoreboard />
+              ) : state.gameType === GAME_MODES.MULTIPLICATION ? (
+                <MultiplicationScoreboard />
               ) : (
                 <Scoreboard />
               )}

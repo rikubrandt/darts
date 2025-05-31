@@ -187,21 +187,21 @@ export class X01Game extends BaseGame {
     return [
       {
         id: '501',
-        title: '501',
+        title: 'Classic 501',
         description: 'Start with 501 points, first to 0 wins. Must finish on double.',
         value: 501,
         color: 'blue'
       },
       {
         id: '301',
-        title: '301',
+        title: 'Classic 301',
         description: 'Start with 301 points, first to 0 wins. Must finish on double.',
         value: 301,
         color: 'green'
       },
       {
         id: '201',
-        title: '201', 
+        title: 'Classic 201', 
         description: 'Start with 201 points, first to 0 wins. Must finish on double.',
         value: 201,
         color: 'purple'
