@@ -76,10 +76,8 @@ const CombinedSetup = () => {
   const startGame = () => {
     if (!selectedGame || players.length === 0) return;
     
-    // Get the game implementation
     const gameImpl = getGameImplementation(selectedGame.gameType, selectedGame.value);
     
-    // Initialize scores for all players
     const initialScores = gameImpl.initializeGame(players);
     
     // Update game state
@@ -93,7 +91,6 @@ const CombinedSetup = () => {
     dispatch({ type: ACTIONS.SET_CURRENT_DARTS, payload: [] });
   };
 
-  // Get color class for game button
   const getColorClass = (color, isSelected) => {
     const baseColors = {
       'blue': 'bg-blue-500',
@@ -108,7 +105,7 @@ const CombinedSetup = () => {
     const baseColor = baseColors[color] || 'bg-gray-500';
     
     if (isSelected) {
-      return `${baseColor} ring-4 ring-opacity-50 ring-white`;
+      return `${baseColor} border-4 border-red-500 shadow-lg scale-105 transform`;
     }
     
     return baseColor;
