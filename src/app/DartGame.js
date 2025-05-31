@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { GameProvider, useGameContext } from './context/GameContext';
 import { GAME_STATES } from './lib/constants';
 import { GAME_MODES, getAllGameModes } from './game-modes';
@@ -9,6 +9,7 @@ import {
   FinishSuggestion,
   GameOver,
   GameSelect,
+  PlayerSetup,
   CombinedSetup,
   Scoreboard,
   AroundTheClockScoreboard,
@@ -16,6 +17,21 @@ import {
   MultiplicationScoreboard,
   MultiplicationTargetDisplay
 } from './components/game';
+
+// Flatten all game options - this is outside any component
+// so it's calculated once at module load time
+const ALL_GAME_OPTIONS = getAllGameModes().flatMap(gameMode => 
+  gameMode.options.map(option => ({
+    gameType: gameMode.type,
+    ...option
+  }))
+);
+
+// Helper function to get game title from ID
+const getGameTitle = (gameId) => {
+  const gameOption = ALL_GAME_OPTIONS.find(option => option.id === gameId);
+  return gameOption?.title || gameId;
+};
 
 // Modal for showing bust messages
 const BustModal = () => {
@@ -35,24 +51,31 @@ const BustModal = () => {
 
 // Game content based on current game state
 const GameContent = () => {
+  // Using useState + useEffect to avoid hydration mismatch
+  const [isClient, setIsClient] = useState(false);
   const { state } = useGameContext();
-  const { gameState, players, gameMode } = state;
   
-  // Import the getAllGameModes function directly here
-  // since it's only used in this component
-  const getGameTitle = (gameId) => {
-    // Get all game options
-    const allGameOptions = getAllGameModes().flatMap(gameMode => 
-      gameMode.options.map(option => ({
-        gameType: gameMode.type,
-        ...option
-      }))
+  // Wait until client-side rendering before showing dynamic content
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // If we're still server-side rendering, show a simple loading state
+  // This prevents hydration mismatches
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white p-8 rounded-lg shadow-md">
+            <h1 className="text-2xl font-bold text-center">Loading Dart Game...</h1>
+          </div>
+        </div>
+      </div>
     );
-    
-    // Find the matching game option
-    const gameOption = allGameOptions.find(option => option.id === gameId);
-    return gameOption?.title || gameId;
-  };
+  }
+
+  // Now we're client-side, we can use the real state
+  const { gameState, players } = state;
 
   switch (gameState) {
     case GAME_STATES.SETUP:
@@ -106,7 +129,15 @@ const GameContent = () => {
       );
     
     default:
-      return <div>Unknown game state</div>;
+      return (
+        <div className="min-h-screen bg-gray-100 p-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white p-8 rounded-lg shadow-md">
+              <h1 className="text-2xl font-bold text-center">Unknown Game State</h1>
+            </div>
+          </div>
+        </div>
+      );
   }
 };
 

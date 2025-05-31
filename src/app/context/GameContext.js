@@ -1,6 +1,5 @@
 'use client'
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 
 // Initial state
 const initialState = {
@@ -8,7 +7,7 @@ const initialState = {
   players: [],
   currentPlayer: 0,
   gameMode: null,
-  gameType: null, // Identifies which game implementation to use (x01, cricket, etc.)
+  gameType: null, 
   scores: {},
   currentDarts: [],
   finishSuggestion: null,
@@ -16,6 +15,9 @@ const initialState = {
   showBustModal: false,
   bustMessage: '',
 };
+
+// Storage key
+const STORAGE_KEY = 'dart-game-state';
 
 // Action types
 const ACTIONS = {
@@ -38,70 +40,122 @@ const ACTIONS = {
   RESET_GAME: 'RESET_GAME',
 };
 
+function loadSavedState() {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return null;
+    return JSON.parse(saved);
+  } catch (error) {
+    return null;
+  }
+}
+
 // Reducer function
 function gameReducer(state, action) {
+  let newState;
+  
   switch (action.type) {
     case ACTIONS.SET_GAME_STATE:
-      return { ...state, gameState: action.payload };
+      newState = { ...state, gameState: action.payload };
+      break;
     case ACTIONS.SET_PLAYERS:
-      return { ...state, players: action.payload };
+      newState = { ...state, players: action.payload };
+      break;
     case ACTIONS.ADD_PLAYER:
-      return { ...state, players: [...state.players, action.payload] };
+      newState = { 
+        ...state, 
+        players: [...state.players, action.payload] 
+      };
+      break;
     case ACTIONS.REMOVE_PLAYER:
-      return { 
+      newState = { 
         ...state, 
         players: state.players.filter((_, i) => i !== action.payload) 
       };
+      break;
     case ACTIONS.SET_CURRENT_PLAYER:
-      return { ...state, currentPlayer: action.payload };
+      newState = { ...state, currentPlayer: action.payload };
+      break;
     case ACTIONS.SET_GAME_MODE:
-      return { 
+      newState = { 
         ...state, 
         gameMode: action.payload.mode,
         gameType: action.payload.type 
       };
+      break;
     case ACTIONS.SET_SCORES:
-      return { ...state, scores: action.payload };
+      newState = { ...state, scores: action.payload };
+      break;
     case ACTIONS.UPDATE_SCORE:
-      return { 
+      newState = { 
         ...state, 
         scores: { 
           ...state.scores, 
           [action.payload.player]: action.payload.score 
         } 
       };
+      break;
     case ACTIONS.SET_CURRENT_DARTS:
-      return { ...state, currentDarts: action.payload };
+      newState = { ...state, currentDarts: action.payload };
+      break;
     case ACTIONS.ADD_DART:
-      return { 
+      newState = { 
         ...state, 
         currentDarts: [...state.currentDarts, action.payload] 
       };
+      break;
     case ACTIONS.REMOVE_DART:
-      return { 
+      newState = { 
         ...state, 
         currentDarts: state.currentDarts.filter((_, i) => i !== action.payload) 
       };
+      break;
     case ACTIONS.REPLACE_DART:
-      return { 
+      newState = { 
         ...state, 
         currentDarts: state.currentDarts.map((dart, i) => 
           i === action.payload.index ? action.payload.dart : dart
         ) 
       };
+      break;
     case ACTIONS.SET_FINISH_SUGGESTION:
-      return { ...state, finishSuggestion: action.payload };
+      newState = { ...state, finishSuggestion: action.payload };
+      break;
     case ACTIONS.SET_EDITING_INDEX:
-      return { ...state, editingIndex: action.payload };
+      newState = { ...state, editingIndex: action.payload };
+      break;
     case ACTIONS.SHOW_BUST_MODAL:
-      return { ...state, showBustModal: true, bustMessage: action.payload };
+      newState = { ...state, showBustModal: true, bustMessage: action.payload };
+      break;
     case ACTIONS.HIDE_BUST_MODAL:
-      return { ...state, showBustModal: false };
+      newState = { ...state, showBustModal: false };
+      break;
     case ACTIONS.RESET_GAME:
-      return initialState;
+      newState = initialState;
+      // Clear localStorage when resetting
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+      break;
     default:
       return state;
   }
+  
+  // Save state if we're in playing mode
+  if (newState.gameState === 'playing' && typeof window !== 'undefined') {
+    // We use a timeout to ensure this doesn't cause rendering issues
+    setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
+      } catch (e) {
+        // Silent fail
+      }
+    }, 0);
+  }
+  
+  return newState;
 }
 
 // Create context
@@ -109,46 +163,11 @@ const GameContext = createContext();
 
 // Context provider
 export function GameProvider({ children }) {
-  const [savedState, saveState] = useLocalStorage('dart-game-state', null);
-  const [state, dispatch] = useReducer(gameReducer, savedState || initialState);
+  const savedState = loadSavedState();
+  const initialStateWithSaved = savedState || initialState;
   
-  // Flag to prevent saving during initial render
-  const isInitialMount = useRef(true);
-
-  // Save state to localStorage whenever it changes, but not on initial render
-  useEffect(() => {
-    // Skip the first render and don't save if we're just starting up
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    
-    // Only save if we have meaningful data
-    if (state.gameState !== 'setup' || state.players.length > 0) {
-      // Create a stable reference for the saving to prevent infinite loops
-      const stateToSave = {
-        ...state,
-        timestamp: Date.now()
-      };
-      
-      // Use a timeout to prevent immediate re-renders
-      const saveTimeout = setTimeout(() => {
-        saveState(stateToSave);
-      }, 0);
-      
-      return () => clearTimeout(saveTimeout);
-    }
-  }, [
-    state.gameState, 
-    state.players, 
-    state.currentPlayer, 
-    state.gameMode, 
-    state.gameType, 
-    state.scores, 
-    state.currentDarts.length, // Only track length changes, not the array itself
-    state.finishSuggestion, 
-    state.editingIndex
-  ]);
+  // Initialize reducer with initial state
+  const [state, dispatch] = useReducer(gameReducer, initialStateWithSaved);
 
   // Auto-hide bust modal
   useEffect(() => {

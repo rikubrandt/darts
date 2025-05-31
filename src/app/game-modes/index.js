@@ -20,8 +20,6 @@ export const GAME_MODES = {
  * @returns {BaseGame} - Game implementation instance
  */
 export function getGameImplementation(type, options = {}) {
-  console.log(`Creating game implementation for ${type} with options:`, options);
-  
   switch (type) {
     case GAME_MODES.X01:
       // For X01 games, the startingScore is the main option
@@ -29,28 +27,22 @@ export function getGameImplementation(type, options = {}) {
       
     case GAME_MODES.AROUND_THE_CLOCK:
       // For Around the Clock, pass all options for special game modes
-      const clockGame = new AroundTheClockGame({
+      return new AroundTheClockGame({
         doubleSkip: !!options.doubleSkip,
         tripleSkip: !!options.tripleSkip,
         skipOnMiss: !!options.skipOnMiss,
         continueOnSuccess: !!options.continueOnSuccess
       });
       
-      console.log("Created Around the Clock game with options:", {
-        doubleSkip: clockGame.doubleSkip,
-        tripleSkip: clockGame.tripleSkip,
-        skipOnMiss: clockGame.skipOnMiss,
-        continueOnSuccess: clockGame.continueOnSuccess
-      });
-      
-      return clockGame;
-      
     case GAME_MODES.MULTIPLICATION:
       // For Multiplication game
       return new MultiplicationGame({
         maxRounds: options.maxRounds || 20
       });
-
+      
+    // Add more game types as they are implemented
+    // case GAME_MODES.CRICKET:
+    //   return new CricketGame(options);
     default:
       throw new Error(`Unknown game type: ${type}`);
   }

@@ -16,13 +16,6 @@ export class AroundTheClockGame extends BaseGame {
     this.skipOnMiss = !!options.skipOnMiss;
     this.continueOnSuccess = !!options.continueOnSuccess;
     
-    console.log("Game options:", {
-      doubleSkip: this.doubleSkip,
-      tripleSkip: this.tripleSkip,
-      skipOnMiss: this.skipOnMiss,
-      continueOnSuccess: this.continueOnSuccess
-    });
-    
     this.sequence = Array.from({ length: 20 }, (_, i) => i + 1); // 1-20 by default
   }
 
