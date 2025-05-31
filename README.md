@@ -36,10 +36,8 @@ Use if you are too lazy to count in your head.
 ## Screenshots
 
 ![Game Setup Screen](./img/img1.png)
-*Game setup screen with player selection and game options*
 
 ![Gameplay Screen](./img/img2.png)
-*Interactive dartboard and scoring during gameplay*
 
 ## Run
 
